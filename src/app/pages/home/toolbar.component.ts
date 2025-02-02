@@ -1,16 +1,15 @@
-import { Component, inject } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
-import { APP_NAME, IS_MEDIUM } from '../../app.constants';
-import { WindowsObserverService } from '../../core/services/utilities/windows-observer.service';
-import {
-  ThemeMode,
-  ThemeService,
-} from '../../core/services/utilities/theme.service';
+import {Component, inject} from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
+import {APP_NAME, IS_MEDIUM} from '../../app.constants';
+import {WindowsObserverService} from '../../core/services/utilities/windows-observer.service';
+import {ThemeMode, ThemeService,} from '../../core/services/utilities/theme.service';
+import {StateService} from '../../core/services/utilities/state.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-toolbar',
@@ -26,9 +25,9 @@ import {
     <mat-toolbar>
       <div class="left-container">
         @if (viewport() < mediumScreen) {
-        <button mat-icon-button matTooltip="Menu">
-          <mat-icon>menu</mat-icon>
-        </button>
+          <button mat-icon-button matTooltip="Menu" (click)="toggleSideBar()">
+            <mat-icon>menu</mat-icon>
+          </button>
         }
         <h2>
           <b>{{ appName }}</b>
@@ -52,8 +51,8 @@ import {
             <mat-icon>dark_mode</mat-icon>
             <span>Thème</span>
           </button>
-          <mat-divider />
-          <button mat-menu-item>
+          <mat-divider/>
+          <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span>Se déconnecter</span>
           </button>
@@ -72,39 +71,48 @@ import {
         </mat-menu>
       </div>
     </mat-toolbar>
-    <mat-divider />
+    <mat-divider/>
   `,
   styles: `
-  mat-toolbar {
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
-
-    .left-container, .avatar-container {
+    mat-toolbar {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap:0.5rem
-    }
 
-    img {
-      border-radius: 50%;
-      background: lightgray;
-      cursor: pointer;
-      transition: 250ms;
+      .left-container, .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem
+      }
 
-      &:hover {
-        transform: scale(0.98);
+      img {
+        border-radius: 50%;
+        background: lightgray;
+        cursor: pointer;
+        transition: 250ms;
+
+        &:hover {
+          transform: scale(0.98);
+        }
       }
     }
-  }
   `,
 })
 export class ToolbarComponent {
   appName = APP_NAME;
-  theme = inject(ThemeService);
-
+  themeService = inject(ThemeService);
+  stateService = inject(StateService)
   viewport = inject(WindowsObserverService).width;
   mediumScreen = IS_MEDIUM;
+  router = inject(Router)
 
-  switchTheme = (theme: ThemeMode) => this.theme.setTheme(theme);
+  toggleSideBar() {
+    this.stateService.isSidebarVisible.update((value) => !value)
+  }
+
+  switchTheme = (theme: ThemeMode) => this.themeService.setTheme(theme);
+
+  logout() {
+    this.router.navigate(["login"])
+  }
 }

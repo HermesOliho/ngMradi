@@ -1,12 +1,13 @@
 import { Component } from "@angular/core";
 import { ToolbarComponent } from "./toolbar.component";
+import {SideNavComponent} from './side-nav/side-nav.component';
 
 @Component({
     selector: "app-home",
-    imports: [ToolbarComponent],
+  imports: [ToolbarComponent, SideNavComponent],
     template: `
         <app-toolbar />
-        <p>home works!</p>
+        <app-side-nav/>
     `,
     styles: ``,
 })
